@@ -1,0 +1,5 @@
+python version
+pip --version
+pip install django
+python -m django --version
+
