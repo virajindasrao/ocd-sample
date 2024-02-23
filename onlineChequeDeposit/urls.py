@@ -19,8 +19,11 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from user import action
+from teller import dashboard
 
 urlpatterns = [
-    path('teller/dashboard', admin.site.urls),
+    path('teller/dashboard', dashboard.show),
+    path('update/<int:id>', dashboard.update_details),
+    path('teller/action/<int:id>/<str:action>', dashboard.change_status),
     path('', action.upload_cheque),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

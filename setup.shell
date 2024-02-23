@@ -3,3 +3,7 @@ pip --version
 pip install django
 python -m django --version
 
+pip install boto3
+pip install regex
+pip install amazon-textract-response-parser
+pip install psycopg2

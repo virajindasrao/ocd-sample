@@ -1,4 +1,5 @@
-
+import json, time, os
+from . import client
 import json
 import trp
 import boto3
@@ -6,9 +7,38 @@ import re
 import os
 from datetime import datetime, timedelta
 
-path=('/Users/.../Feb-19-2024_110217.json') ##Prateek Agarwal
 
-def parse_data(path):
+
+def convert(file_name):
+    try:
+        image_byte = ""
+        with open(f"static/images/{file_name}.png", 'rb') as file:
+            print(file)
+            img = file.read()
+            image_bytes = bytearray(img)
+
+        c = client.client()
+
+        print(f'client {c}')
+
+        response = c.analyze_document(Document={'Bytes':image_bytes}, FeatureTypes=['TABLES', 'FORMS', 'SIGNATURES'])
+        response_json = json.dumps(response)
+        print(f'client {response_json}')
+
+        json_file = f"C:\\Users\\viraj\\Projects\\ocd-sample\\static\\json\\{file_name}.json"
+
+        f = open(json_file, 'a')
+        f.write(response_json)
+        f.close()
+        return True
+    except Exception as e:
+        print(e)
+        return False
+    
+
+def extract(file_name):
+    path = f"static/json/{file_name}.json"
+    print("path :: ", path)
     with open(path) as f:
         response = f.read()
         results = json.loads(response)
@@ -17,7 +47,8 @@ def parse_data(path):
     split_sec=response.split(",")
     
     def findWholeWord(w):
-        return re.compile(r'\b{0})\b'.format(w), flags=re.IGNORECASE).search
+        print(f'error log {w}')
+        return re.compile(re.escape(r'\b{0})\b'.format(w)), flags=re.IGNORECASE).search
             
     for page in doc.pages:
         for field in page.form.fields:
@@ -142,13 +173,8 @@ def parse_data(path):
         "overall_confidence": confidence_status
             
             }
-        
-
-    
-    
-parse_data(path)    
     
     
                 
     
-        
+# extract('Feb-23-2024_135700')
