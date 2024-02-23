@@ -4,6 +4,7 @@ import time
 from . import files
 from textract import process
 import base64
+from rds import client
 # from rds import client
 
 def upload_cheque(request):
@@ -16,22 +17,21 @@ def upload_cheque(request):
     if request.method == "POST":
         cheque_image = request.FILES['cheque']
     
-        context['message'] = 'Transaction has been successfully completed. Thank you!'
-        if files.upload(cheque_image, file_name) is False:
-            context['error'] = 'Failed to submit transaction. Kindly try again!'
-            return render(request, 'user.html', context)
+        # if files.upload(cheque_image, file_name) is False:
+        #     context['error'] = 'Failed to submit transaction. Kindly try again!'
+        #     return render(request, 'user.html', context)
 
-        if process.convert(file_name) is False:
-            context['error'] = 'Failed to submit transaction. Kindly try again!'
-            return render(request, 'user.html', context)
+        # if process.convert(file_name) is False:
+        #     context['error'] = 'Failed to submit transaction. Kindly try again!'
+        #     return render(request, 'user.html', context)
         
-
+        file_name = 'Feb-23-2024_195441'
         d = process.extract(file_name)
         print("data :: ", d)
 
         transition = 'pending'
 
-        if 'pay' not in d:
+        if 'pay_to' not in d:
             d['pay_confidence'] = 0
             d['pay'] = ''
 
@@ -54,7 +54,33 @@ def upload_cheque(request):
         overall_confidence = d['pay_confidence'] + d['payer_account_confidence'] + d['ifsc_code_confidence'] + d['amount_confidence'] + d['micr_confidence']
         overall_confidence = overall_confidence / 5
 
-        
-
+        db = client.OcdDB()
+        result = db.insert_record('pending', 
+                                  d['pay_to'], 
+                                  d['pay_confidence'], 
+                                  d['payer_account'], 
+                                  d['payer_account_confidence'], 
+                                  d['ifsc_code'], 
+                                  d['ifsc_code_confidence'], 
+                                  d['amount'], 
+                                  d['amount_confidence'], 
+                                  d['date'], 
+                                  d['date_status'], 
+                                  d['micr'], 
+                                  d['micr_confidence'], 
+                                  d['micr_data']['status'], 
+                                  d['micr_data']['pincode'], 
+                                  d['micr_data']['bank_code'], 
+                                  d['micr_data']['branch_code'], 
+                                  overall_confidence, 
+                                  f'{file_name}.png', 
+                                  f'{file_name}.json',
+                                  d['signature_data']['present'],
+                                  d['signature_data']['count'])
+        if result is False:
+            context['error'] = "error occured. Kindly try later."
+        else:
+            context['message'] = 'Transaction has been successfully completed. Thank you!'
 
     return render(request, 'user.html', context)
+

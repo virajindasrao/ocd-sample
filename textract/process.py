@@ -38,22 +38,21 @@ def convert(file_name):
 
 def extract(file_name):
     path = f"static/json/{file_name}.json"
-    print("path :: ", path)
     with open(path) as f:
         response = f.read()
         results = json.loads(response)
         doc = trp.Document(results)
+        print("doc :: ", doc)
         
     split_sec=response.split(",")
     
     def findWholeWord(w):
-        print(f'error log {w}')
-        return re.compile(re.escape(r'\b{0})\b'.format(w)), flags=re.IGNORECASE).search
+        return re.compile(r'\b({0})\b'.format(w), flags=re.IGNORECASE).search
             
     for page in doc.pages:
         for field in page.form.fields:
             if hasattr(field.key, 'text') and hasattr(field.value, 'text'):
-                #print("field.key:{}, Value:{}".format(field.key.text, field.value.text))
+                print("field.key:{}, Value:{}".format(field.key.text, field.value.text))
                 a=format(field.key.text)
                 b=format(field.value.text)
                 if findWholeWord('A/C')(a) or findWholeWord('AC')(a) :
@@ -68,6 +67,7 @@ def extract(file_name):
                     if len(str(re.findall(r'\d{8}', b)))==12:
                         a="date"
                 globals()[f'{a}']=str(b)
+                print(a)
                 
                 
     micr_string = re.search(r'"Text": "⑈[0-9]+⑈\s+[0-9]+⑆\s+[0-9]+⑈\s+[0-9]+.*"', response)
@@ -98,6 +98,7 @@ def extract(file_name):
         return [micr_status, micr_pincode, micr_bankcode, micr_branchcode]
     
     micr_check(micr)
+    
     date_formatted=datetime.strptime(date, '%d%m%Y') # noqa
     d_diff = (datetime.today() - date_formatted).days
     
@@ -122,17 +123,43 @@ def extract(file_name):
                 return res[0]
             
             
-    PAY_conf=confidence_check(PAY) #noqa:
-    account_conf=confidence_check(account) #noqa:
-    IFS_conf=confidence_check(IFS) #noqa:
-    amount_conf=confidence_check(amount) #noqa:
-    micr_conf=confidence_check(micr) #noqa:
+    try:
+        PAY_conf=confidence_check(PAY) #noqa:
+    except NameError:
+        PAY = ''
+        PAY_conf = 0
+
+    try:
+        account_conf=confidence_check(account) #noqa:
+    except NameError:
+        account = ''
+        account_conf = 0
+
+    try:
+        IFS_conf=confidence_check(IFS) #noqa:
+    except NameError:
+        IFS = ''
+        IFS_conf = 0
+
+    try:
+        amount_conf=confidence_check(amount) #noqa:
+    except NameError:
+        amount = ''
+        amount_conf = 0
+
+    try:
+        micr_conf=confidence_check(micr) #noqa:
+    except NameError:
+        micr = ''
+        micr_conf = 0
+    
+    
     date_check(date) #noqa:
         
-    if PAY_conf<80 or account_conf<80 or IFS_conf<80 or amount_conf<80:
-        confidence_status="invalid"
-    else:
-        confidence_status="valid"
+    # if PAY_conf<80 or account_conf<80 or IFS_conf<80 or amount_conf<80:
+    #     confidence_status="invalid"
+    # else:
+    #     confidence_status="valid"
         
     print("Pay:", PAY)#noqa:
     print("From Account:", account)#noqa:
@@ -148,8 +175,10 @@ def extract(file_name):
     print("IFSC code confidence:",IFS_conf)
     print("Amount confidence:", amount_conf)
     print("MICR confidence:", micr_conf)
-    print("Overall confidence:", confidence_status)    
+    # print("Overall confidence:", confidence_status)    
     print("MICR:",micr)
+
+    present, count = is_signature_present(results)
     
     return {
         "pay_to": PAY, #noqa:
@@ -170,11 +199,21 @@ def extract(file_name):
             },
         "micr": micr,
         "micr_confidence": micr_conf,
-        "overall_confidence": confidence_status
-            
-            }
+        "signature_data": {
+            "present": present,
+            "count": count
+        }
+    }
     
-    
-                
+def is_signature_present(results):
+    present = False
+    count = 0
+    for block in results['Blocks']:
+        if block['BlockType'] == 'SIGNATURE': 
+            count = count+1
+            present = True 
+    return present, count  
+
+     
     
 # extract('Feb-23-2024_135700')

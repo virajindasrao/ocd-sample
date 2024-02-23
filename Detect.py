@@ -98,17 +98,45 @@ def parse_data(path):
                 return res[0]
             
             
-    PAY_conf=confidence_check(PAY) #noqa:
-    account_conf=confidence_check(account) #noqa:
-    IFS_conf=confidence_check(IFS) #noqa:
-    amount_conf=confidence_check(amount) #noqa:
-    micr_conf=confidence_check(micr) #noqa:
-    date_check(date) #noqa:
+    try:
+        PAY_conf=confidence_check(PAY) #noqa:
+    except NameError:
+        PAY = ''
+        PAY_conf = 0
+
+    try:
+        account_conf=confidence_check(account) #noqa:
+    except NameError:
+        account = ''
+        account_conf = 0
+
+    try:
+        IFS_conf=confidence_check(IFS) #noqa:
+    except NameError:
+        IFS = ''
+        IFS_conf = 0
+
+    try:
+        amount_conf=confidence_check(amount) #noqa:
+    except NameError:
+        amount = ''
+        amount_conf = 0
+
+    try:
+        micr_conf=confidence_check(micr) #noqa:
+    except NameError:
+        micr = ''
+        micr_conf = 0
+
+    try:
+        date_check(date) #noqa:
+    except NameError:
+        date = ''
         
-    if PAY_conf<80 or account_conf<80 or IFS_conf<80 or amount_conf<80:
-        confidence_status="invalid"
-    else:
-        confidence_status="valid"
+    # if PAY_conf<80 or account_conf<80 or IFS_conf<80 or amount_conf<80:
+    #     confidence_status="invalid"
+    # else:
+    #     confidence_status="valid"
         
     print("Pay:", PAY)#noqa:
     print("From Account:", account)#noqa:

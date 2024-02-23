@@ -1,16 +1,10 @@
 import os, traceback, psycopg2, psycopg2.extras
 
-DB_ENDPOINT = "hackathon2024.c9gg4u0cqaxq.us-east-1.rds.amazonaws.com"
-DB_PORT = "5432"
-USER = "postgres"
-REGION = "us-east-1"
-DB_NAME = "ocdDb"
 # os.environment['LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN'] = '1'
 
 class OcdDB:
     def __init__(self) -> None:
-        print("asasd , ", os.getenv('dbpassword'))
-        self.conn = psycopg2.connect(dbname=DB_NAME, user=USER, password='Hackathon2024$', host=DB_ENDPOINT, port=DB_PORT)
+        self.conn = psycopg2.connect(dbname=DB_NAME, user=USER, password='', host=DB_ENDPOINT, port=DB_PORT)
         print('db connection is ready')
 
         self.nt_cur = self.conn.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor)
@@ -19,7 +13,7 @@ class OcdDB:
     def get_records(self):
         try:
             q = 'SELECT * FROM transaction_details'
-            nt_cur = self.conn.cursor()
+            nt_cur = self.conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
             nt_cur.execute(q)
             result = nt_cur.fetchall()
             nt_cur.close()
@@ -28,9 +22,31 @@ class OcdDB:
             print(traceback.print_exc())
             print(e)
 
-    def insert_record(self, status, pay_to, pay_conf, payer_acc, payer_acc_conf, ifsc, ifsc_conf, amt, amt_conf, date_issued, date_status, micr, micr_conf, micr_status, micr_pin, micr_bank, micr_branch, conf, cheque, json_data):
+    def insert_record(self, 
+                      status, 
+                      pay_to, 
+                      pay_conf, 
+                      payer_acc, 
+                      payer_acc_conf, 
+                      ifsc, 
+                      ifsc_conf, 
+                      amt, 
+                      amt_conf, 
+                      date_issued, 
+                      date_status, 
+                      micr, 
+                      micr_conf, 
+                      micr_status, 
+                      micr_pin, 
+                      micr_bank, 
+                      micr_branch, 
+                      conf, 
+                      cheque, 
+                      json_data,
+                      sign_present,
+                      sign_count):
         try:
-            q = f"INSERT INTO transaction_details (status, pay_to, pay_conf, payer_acc, payer_acc_conf, ifsc, ifsc_conf, amt, amt_conf, date_issued, date_status, micr, micr_conf, micr_status, micr_pin, micr_bank, micr_branch, conf, cheque, json_data) VALUES('{status}', '{pay_to}', '{pay_conf}', '{payer_acc}', '{payer_acc_conf}', '{ifsc}', '{ifsc_conf}', '{amt}', '{amt_conf}', '{date_issued}', '{date_status}', '{micr}', '{micr_conf}', '{micr_status}', '{micr_pin}', '{micr_bank}', '{micr_branch}', '{conf}', '{cheque}', '{json_data}')"
+            q = f"INSERT INTO transaction_details (status, pay_to, pay_conf, payer_acc, payer_acc_conf, ifsc, ifsc_conf, amt, amt_conf, date_issued, date_status, micr, micr_conf, micr_status, micr_pin, micr_bank, micr_branch, conf, cheque, json_data, signature_check, signature_count) VALUES('{status}', '{pay_to}', {pay_conf}, '{payer_acc}', {payer_acc_conf}, '{ifsc}', {ifsc_conf}, '{amt}', {amt_conf}, '{date_issued}', '{date_status}', '{micr}', {micr_conf}, '{micr_status}', '{micr_pin}', '{micr_bank}', '{micr_branch}', {conf}, '{cheque}', '{json_data}', {sign_present}, {sign_count})"
 
             print(q)
 
@@ -42,6 +58,7 @@ class OcdDB:
         except Exception as e:
             print(e)
             print(traceback.print_exc())
+            return False
 
     def update_status(self, id, status):
         try:

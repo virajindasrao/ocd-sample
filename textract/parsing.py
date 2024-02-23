@@ -1,12 +1,17 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Feb 22 21:00:52 2024
+
+"""
 
 import json
 import trp
-import boto3
+
 import re
 import os
 from datetime import datetime, timedelta
 
-# path=('/Users/.../Feb-19-2024_110217.json') ##Prateek Agarwal
+path=('C:/Users/vicky/OneDrive/Desktop/PythonClassroom/Data/textract_json/Feb-23-2024_134858.json') ##Prateek Agarwal
 
 def parse_data(path):
     with open(path) as f:
@@ -17,12 +22,12 @@ def parse_data(path):
     split_sec=response.split(",")
     
     def findWholeWord(w):
-        return re.compile(re.escape(r'\b{0})\b'.format(w)), flags=re.IGNORECASE).search
+        return re.compile(r'\b({0})\b'.format(w), flags=re.IGNORECASE).search
             
     for page in doc.pages:
         for field in page.form.fields:
             if hasattr(field.key, 'text') and hasattr(field.value, 'text'):
-                #print("field.key:{}, Value:{}".format(field.key.text, field.value.text))
+                print("field.key:{}, Value:{}".format(field.key.text, field.value.text))
                 a=format(field.key.text)
                 b=format(field.value.text)
                 if findWholeWord('A/C')(a) or findWholeWord('AC')(a) :
@@ -37,6 +42,7 @@ def parse_data(path):
                     if len(str(re.findall(r'\d{8}', b)))==12:
                         a="date"
                 globals()[f'{a}']=str(b)
+                print(a)
                 
                 
     micr_string = re.search(r'"Text": "⑈[0-9]+⑈\s+[0-9]+⑆\s+[0-9]+⑈\s+[0-9]+.*"', response)
@@ -67,6 +73,7 @@ def parse_data(path):
         return [micr_status, micr_pincode, micr_bankcode, micr_branchcode]
     
     micr_check(micr)
+    
     date_formatted=datetime.strptime(date, '%d%m%Y') # noqa
     d_diff = (datetime.today() - date_formatted).days
     
@@ -142,8 +149,13 @@ def parse_data(path):
         "overall_confidence": confidence_status
             
             }
+        
+
+    
+    
+parse_data('Feb-23-2024_135700.json')    
     
     
                 
-parse_data('Feb-23-2024_135700.json')
-
+    
+        

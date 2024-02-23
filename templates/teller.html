@@ -102,12 +102,12 @@
                     {% for record in records %}
                     <div class="accord-parent">
                         <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{record.0}}" aria-expanded="true" aria-controls="collapse{{record.0}}">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{record.trasaction_id}}" aria-expanded="true" aria-controls="collapse{{record.trasaction_id}}">
                             <table class="table table-hover accord-head-table">
-                                <tr class="{{record.13}}">
-                                    <td>Status - {{record.1}}</td>
-                                    <td>Account - {{record.4}}</td>
-                                    <td>Overall confidence - {{record.18}}</td>
+                                <tr class="{{record.trasaction_id}}">
+                                    <td>Status - {{record.status}}</td>
+                                    <td>Account - {{record.payer_acc}}</td>
+                                    <td>Overall confidence - {{record.conf}}</td>
                                     <td style="width: 188px;">
                                     </td>
                                 </tr>
@@ -115,108 +115,120 @@
                         </button>
                     </h2>
 
-                        <div class="accord-content {% if record.1 != 'pending' %} collapse {% endif %}" id="collapse{{record.0}}" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-                            <div class="report" id="report_{{record.0}}">
+                        <div class="accord-content {% if record.status != 'pending' %} collapse {% endif %}" id="collapse{{record.trasaction_id}}" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                            <div class="report" id="report_{{record.trasaction_id}}">
                                 <table class="table table-hover child-table accordion-body">
                                     <tr class="{{record.13}}">
                                         <tr>
                                             <th style="background-color: #e9e9e9 !important; text-align: center;" colspan="8">Details</th>
                                         </tr>
-                                        <th>#</th><td>{{record.0}}</td>                                        
-                                        <th>Status</th><td>{{record.1}}</td>                                        
+                                        <th>#</th><td>{{record.trasaction_id}}</td>                                        
+                                        <th>Status</th><td>{{record.status}}</td>                                        
                                         <th>Pay to</th>
-                                        <td class="{% if record.3 < 90 %} low_conf {% endif %} {% if record.3 < 85 %} down_conf {% endif %}">
-                                            {{record.2}}
+                                        <td class="{% if record.pay_conf < 90 %} low_conf {% endif %} {% if record.pay_conf < 85 %} down_conf {% endif %}">
+                                            {{record.pay_to}}
                                         </td>                                        
                                         <th>Payer account</th>
-                                        <td class="{% if record.5 < 90 %} low_conf {% endif %} {% if record.5 < 85 %} down_conf {% endif %}">
-                                            {{record.4}}
+                                        <td class="{% if record.payer_acc < 90 %} low_conf {% endif %} {% if record.payer_acc < 85 %} down_conf {% endif %}">
+                                            {{record.payer_acc}}
                                         </td>                                      
                                     </tr>
                                     <tr class="{{record.13}}">
                                         <th>Amount</th>
-                                        <td class="{% if record.9 < 90 %} low_conf {% endif %} {% if record.9 < 85 %} down_conf {% endif %}">
-                                            {{record.8}}
+                                        <td class="{% if record.amt_conf < 90 %} low_conf {% endif %} {% if record.amt_conf < 85 %} down_conf {% endif %}">
+                                            {{record.amt}}
                                         </td>                                      
                                         <th>IFSC code</th>
-                                        <td class="{% if record.7 < 90 %} low_conf {% endif %} {% if record.7 < 85 %} down_conf {% endif %}">
-                                            {{record.6}}
+                                        <td class="{% if record.ifsc_conf < 90 %} low_conf {% endif %} {% if record.ifsc_conf < 85 %} down_conf {% endif %}">
+                                            {{record.ifsc}}
                                         </td>                                      
-                                        <th>Issued On</th><td>{{record.20}}</td>                                        
-                                        <th>Deposited On</th><td>{{record.21}}</td>                                        
+                                        <th>Issued On</th><td>{{record.date_issued}}</td>                                        
+                                        <th>Deposited On</th><td>{{record.created_date_time}}</td>                                        
                                     </tr>
                                 </table>
                                 <table class="table table-hover child-table">
                                     <tr>
                                         <th style="background-color: #e9e9e9 !important; text-align: center;" colspan="8"
                                             class="{% if record.13 < 90 %} low_conf {% endif %} {% if record.13 < 85 %} down_conf {% endif %} text center">
-                                            MICR - {{record.12}}
+                                            MICR - {{record.micr}}
                                         </th>
                                     </tr>
                                     <tr class="{{record.13}}">
-                                        <th>MICR Status</th><td>{{record.14}}</td>
-                                        <th>MICR Pincod</th><td>{{record.15}}</td>
-                                        <th>MICR Bank Code</th><td>{{record.16}}</td>
-                                        <th>MICR Branch Code</th><td>{{record.17}}</td>
+                                        <th>MICR Status</th><td>{{record.micr_status}}</td>
+                                        <th>MICR Pincode</th><td>{{record.micr_pin}}</td>
+                                        <th>MICR Bank Code</th><td>{{record.micr_bank}}</td>
+                                        <th>MICR Branch Code</th><td>{{record.micr_branch}}</td>
+                                    </tr>
+                                </table>
+                                <table class="table table-hover child-table">
+                                    <tr>
+                                        <th style="background-color: #e9e9e9 !important; text-align: center;" colspan="8"
+                                            class="text center">
+                                            Signature
+                                        </th>
+                                    </tr>
+                                    <tr class="{{record.13}}">
+                                        <th>Signature present on check</th><td>{{record.signature_check}}</td>
+                                        <th>Total signature(s) count</th><td>{{record.signature_count}}</td>
                                     </tr>
                                 </table>
                                 <div style="text-align: center;">
-                                    {% if record.1 == 'pending' %}
-                                    <button class="btn btn-primary toggle-edit" data-toggle-id="{{record.0}}">Update details</button>
-                                    <a type="button" class="btn btn-success" href="/teller/action/{{record.0}}/approve">Approve</a>
-                                    <a type="button" class="btn btn-warning" href="/teller/action/{{record.0}}/reject">Reject</a>
+                                    {% if record.status == 'pending' %}
+                                    <button class="btn btn-primary toggle-edit" data-toggle-id="{{record.trasaction_id}}">Update details</button>
+                                    <a type="button" class="btn btn-success" href="/teller/action/{{record.trasaction_id}}/approve">Approve</a>
+                                    <a type="button" class="btn btn-warning" href="/teller/action/{{record.trasaction_id}}/reject">Reject</a>
                                     {% endif %}
                                 <br><br>
                                 </div>
                             </div>
-                            <div class="form" style="display: none;" id="form_{{record.0}}">
-                                <form method="post" action="/update/{{record.0}}">{% csrf_token %}
+                            <div class="form" style="display: none;" id="form_{{record.trasaction_id}}">
+                                <form method="post" action="/update/{{record.trasaction_id}}">{% csrf_token %}
                                     <table class="table table-hover child-table accordion-body">
                                         <tr class="{{record.13}}">
                                             <tr>
                                                 <th style="background-color: #e9e9e9 !important; text-align: center;" colspan="8">Details</th>
                                             </tr>
-                                            <th>#</th><td>{{record.0}}</td>                                        
-                                            <th>Status</th><td>{{record.1}}</td>                                        
+                                            <th>#</th><td>{{record.trasaction_id}}</td>                                        
+                                            <th>Status</th><td>{{record.status}}</td>                                        
                                             <th>Pay to</th>
-                                            <td class="{% if record.3 < 90 %} low_conf {% endif %} {% if record.3 < 85 %} down_conf {% endif %}">
-                                                <input type="text" value="{{record.2}}" id="pay_to" name="pay_to" required/>
+                                            <td class="{% if record.pay_conf < 90 %} low_conf {% endif %} {% if record.pay_conf < 85 %} down_conf {% endif %}">
+                                                <input type="text" value="{{record.pay_to}}" id="pay_to" name="pay_to" required/>
                                             </td>                                        
                                             <th>Payer account</th>
-                                            <td class="{% if record.5 < 90 %} low_conf {% endif %} {% if record.5 < 85 %} down_conf {% endif %}">
-                                                <input type="text" value="{{record.4}}" id="payer_acc" name="payer_acc" required/>
+                                            <td class="{% if record.payer_acc_conf < 90 %} low_conf {% endif %} {% if record.payer_acc_conf < 85 %} down_conf {% endif %}">
+                                                <input type="text" value="{{record.payer_acc}}" id="payer_acc" name="payer_acc" required/>
                                             </td>                                      
                                         </tr>
                                         <tr class="{{record.13}}">
                                             <th>Amount</th>
-                                            <td class="{% if record.9 < 90 %} low_conf {% endif %} {% if record.9 < 85 %} down_conf {% endif %}">
-                                                <input type="text" value="{{record.8}}" id="amt" name="amt" required/>
+                                            <td class="{% if record.amt_conf < 90 %} low_conf {% endif %} {% if record.amt_conf < 85 %} down_conf {% endif %}">
+                                                <input type="text" value="{{record.amt}}" id="amt" name="amt" required/>
                                             </td>                                      
                                             <th>IFSC code</th>
-                                            <td class="{% if record.7 < 90 %} low_conf {% endif %} {% if record.7 < 85 %} down_conf {% endif %}">
-                                                <input type="text" value="{{record.6}}" id="ifsc" name="ifsc" required/>
+                                            <td class="{% if record.ifsc_conf < 90 %} low_conf {% endif %} {% if record.ifsc_conf < 85 %} down_conf {% endif %}">
+                                                <input type="text" value="{{record.ifsc}}" id="ifsc" name="ifsc" required/>
                                             </td>                                      
-                                            <th>Issued On</th><td><input type="text" value="{{record.20}}" id="issued_on" name="issued_on" required/></td>                                        
-                                            <th>Deposited On</th><td>{{record.21}}</td>                                        
+                                            <th>Issued On</th><td><input type="text" value="{{record.date_issued}}" id="issued_on" name="issued_on" required/></td>                                        
+                                            <th>Deposited On</th><td>{{record.created_date_time}}</td>                                        
                                         </tr>
                                     </table>
                                     <table class="table table-hover child-table">
                                         <tr>
                                             <th style="background-color: #e9e9e9 !important; text-align: center;" colspan="8"
-                                                class="{% if record.13 < 90 %} low_conf {% endif %} {% if record.13 < 85 %} down_conf {% endif %} text center">
-                                                MICR - <input type="text" value="{{record.22}}" id="micr" name="micr" required/>
+                                                class="{% if record.micr_conf < 90 %} low_conf {% endif %} {% if record.micr_conf < 85 %} down_conf {% endif %} text center">
+                                                MICR - <input type="text" value="{{record.micr}}" id="micr" name="micr" required/>
                                             </th>
                                         </tr>
                                         <tr class="{{record.13}}">
-                                            <th>MICR Status</th><td><input type="text" value="{{record.14}}" id="micr_status" name="micr_status" required/></td>
-                                            <th>MICR Pincod</th><td><input type="text" value="{{record.15}}" id="micr_pin" name="micr_pin" required/></td>
-                                            <th>MICR Bank Code</th><td><input type="text" value="{{record.16}}" id="micr_bank" name="micr_bank" required/></td>
-                                            <th>MICR Branch Code</th><td><input type="text" value="{{record.17}}" id="micr_branch" name="micr_branch" required/></td>
+                                            <th>MICR Status</th><td><input type="text" value="{{record.micr_status}}" id="micr_status" name="micr_status" required/></td>
+                                            <th>MICR Pincod</th><td><input type="text" value="{{record.micr_pin}}" id="micr_pin" name="micr_pin" required/></td>
+                                            <th>MICR Bank Code</th><td><input type="text" value="{{record.micr_bank}}" id="micr_bank" name="micr_bank" required/></td>
+                                            <th>MICR Branch Code</th><td><input type="text" value="{{record.micr_branch}}" id="micr_branch" name="micr_branch" required/></td>
                                         </tr>
                                     </table>
                                     <div style="text-align: center;">
                                         <button type="submit" class="btn btn-warning">Submit details</button>
-                                        <a class="btn btn-secondary toggle-edit" data-toggle-id="{{record.0}}">Cancel Editing</a>
+                                        <a class="btn btn-secondary toggle-edit" data-toggle-id="{{record.trasaction_id}}">Cancel Editing</a>
                                         <br><br>
                                     </div>
                                     </form>
@@ -227,7 +239,7 @@
                                 </tr>
                                 <tr>
                                     <td class="text-center">
-                                        <img src="/img/{{record.19}}" style="max-width:100%"/>
+                                        <img src="/static/images/{{record.cheque}}" style="max-width:100%"/>
                                     </td>
                                 </tr>
                             </table>
