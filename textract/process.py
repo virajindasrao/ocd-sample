@@ -30,6 +30,16 @@ def convert(file_name):
         f = open(json_file, 'a')
         f.write(response_json)
         f.close()
+
+        response = c.analyze_expense(Document={'Bytes':image_bytes})
+        response_json = json.dumps(response)
+        print(f'client {response_json}')
+
+        json_file = f"C:\\Users\\viraj\\Projects\\ocd-sample\\static\\json\\{file_name}_expense.json"
+
+        f = open(json_file, 'a')
+        f.write(response_json)
+        f.close()
         return True
     except Exception as e:
         print(e)

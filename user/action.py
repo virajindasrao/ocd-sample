@@ -17,15 +17,14 @@ def upload_cheque(request):
     if request.method == "POST":
         cheque_image = request.FILES['cheque']
     
-        # if files.upload(cheque_image, file_name) is False:
-        #     context['error'] = 'Failed to submit transaction. Kindly try again!'
-        #     return render(request, 'user.html', context)
+        if files.upload(cheque_image, file_name) is False:
+            context['error'] = 'Failed to submit transaction. Kindly try again!'
+            return render(request, 'user.html', context)
 
-        # if process.convert(file_name) is False:
-        #     context['error'] = 'Failed to submit transaction. Kindly try again!'
-        #     return render(request, 'user.html', context)
+        if process.convert(file_name) is False:
+            context['error'] = 'Failed to submit transaction. Kindly try again!'
+            return render(request, 'user.html', context)
         
-        file_name = 'Feb-23-2024_195441'
         d = process.extract(file_name)
         print("data :: ", d)
 
