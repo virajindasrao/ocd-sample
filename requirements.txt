@@ -1,0 +1,7 @@
+supervision==0.3.0
+transformers
+pyTorch-lightning
+timm
+cython
+pycocotools
+scipy
