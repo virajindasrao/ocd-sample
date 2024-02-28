@@ -9,10 +9,10 @@ from datetime import datetime, timedelta
 
 
 
-def convert(file_name):
+def convert(image_name, json_file_name):
     try:
         image_byte = ""
-        with open(f"static/images/{file_name}.png", 'rb') as file:
+        with open(f"static/images/{image_name}", 'rb') as file:
             print(file)
             img = file.read()
             image_bytes = bytearray(img)
@@ -25,21 +25,12 @@ def convert(file_name):
         response_json = json.dumps(response)
         print(f'client {response_json}')
 
-        json_file = f"C:\\Users\\viraj\\Projects\\ocd-sample\\static\\json\\{file_name}.json"
+        json_file = f"C:\\Users\\viraj\\Projects\\ocd-sample\\static\\json\\{json_file_name}"
 
         f = open(json_file, 'a')
         f.write(response_json)
         f.close()
 
-        response = c.analyze_expense(Document={'Bytes':image_bytes})
-        response_json = json.dumps(response)
-        print(f'client {response_json}')
-
-        json_file = f"C:\\Users\\viraj\\Projects\\ocd-sample\\static\\json\\{file_name}_expense.json"
-
-        f = open(json_file, 'a')
-        f.write(response_json)
-        f.close()
         return True
     except Exception as e:
         print(e)

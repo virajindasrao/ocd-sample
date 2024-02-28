@@ -28,16 +28,15 @@ def upload_cheque(request):
         else:
             context['track_message'] = f"The status of the reference is {result[0].get('status')}"
 
-        return render(request, 'user.html', context)
-
     if request.method == "POST":
         cheque_image = request.FILES['cheque']
+        ext = request.FILES['cheque'].name.split('.')[1]
     
-        if files.upload(cheque_image, file_name) is False:
+        if files.upload(cheque_image, f'{file_name}.{ext}') is False:
             context['error'] = 'Failed to submit transaction. Kindly try again!'
             return render(request, 'user.html', context)
 
-        if process.convert(file_name) is False:
+        if process.convert(f'{file_name}.{ext}', f'{file_name}.json') is False:
             context['error'] = 'Failed to submit transaction. Kindly try again!'
             return render(request, 'user.html', context)
         

@@ -7,7 +7,7 @@ def upload(cheque_image, file_name):
         fs = FileSystemStorage()
         print(f'3 {fs}')
 
-        filename = fs.save(f"C:\\Users\\viraj\\Projects\\ocd-sample\\static\\images\\{file_name}.png", cheque_image)
+        filename = fs.save(f"C:\\Users\\viraj\\Projects\\ocd-sample\\static\\images\\{file_name}", cheque_image)
         print(f'5 {filename}')
         uploaded_file_url = fs.url(filename)
         print(f'6 {uploaded_file_url}')
