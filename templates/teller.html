@@ -145,6 +145,29 @@
                                         <th>Issued On</th><td>{{record.date_issued}}</td>                                        
                                         <th>Deposited On</th><td>{{record.created_date_time}}</td>                                        
                                     </tr>
+                                    </table>
+                                    <table class="table table-hover child-table accordion-body">
+                                        <tr>
+                                            <th style="background-color: #e9e9e9 !important; text-align: center;" colspan="8">Inputs</th>
+                                        </tr>
+                                        <tr class="{{record.13}}">
+                                        <th>Payee Account</th>
+                                        <td class="">
+                                            {{record.payee_account}}
+                                        </td>                                      
+                                        <th>Payee Name</th>
+                                        <td class="">
+                                            {{record.payee_input_name}}
+                                        </td>                                      
+                                        <th>Contact</th>
+                                        <td class="">
+                                            {{record.contact_number}}
+                                        </td>                                      
+                                        <th>Reference</th>
+                                        <td class="">
+                                            {{record.reference_id}}
+                                        </td>                                      
+                                    </tr>
                                 </table>
                                 <table class="table table-hover child-table">
                                     <tr>
@@ -175,8 +198,9 @@
                                 <div style="text-align: center;">
                                     {% if record.status == 'pending' %}
                                     <button class="btn btn-primary toggle-edit" data-toggle-id="{{record.trasaction_id}}">Update details</button>
-                                    <a type="button" class="btn btn-success" href="/teller/action/{{record.trasaction_id}}/approve">Approve</a>
-                                    <a type="button" class="btn btn-warning" href="/teller/action/{{record.trasaction_id}}/reject">Reject</a>
+                                    <a type="button" class="btn btn-success" href="/teller/action/{{record.trasaction_id}}/approved">Approve</a>
+                                    <a type="button" class="btn btn-warning" href="/teller/action/{{record.trasaction_id}}/rejected">Reject</a>
+                                    <a type="button" target="_blank" class="btn btn-secondary" href="/diagram/show/{{record.trasaction_id}}">Track the status</a>
                                     {% endif %}
                                 <br><br>
                                 </div>

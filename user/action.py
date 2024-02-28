@@ -7,12 +7,28 @@ import base64
 from rds import client
 # from rds import client
 
+
 def upload_cheque(request):
     context = {}
     image_uploaded = False
 
     t = time.localtime()
-    file_name = time.strftime('%b-%d-%Y_%H%M%S', t)
+    file_name = time.strftime('%m%d%Y%H%M%S', t)
+
+    reference = request.GET.get('reference', '')
+    print(f"reference {reference}")
+
+    if request.method == "GET" and reference != '':
+        db = client.OcdDB()
+        result = db.track_record(reference)
+        print(result)
+
+        if result is False or result == []:
+            context['track_error'] = "Not able to detect the reference at the moment. Make sure you enter the number correctly."
+        else:
+            context['track_message'] = f"The status of the reference is {result[0].get('status')}"
+
+        return render(request, 'user.html', context)
 
     if request.method == "POST":
         cheque_image = request.FILES['cheque']
@@ -24,6 +40,10 @@ def upload_cheque(request):
         if process.convert(file_name) is False:
             context['error'] = 'Failed to submit transaction. Kindly try again!'
             return render(request, 'user.html', context)
+        
+        payee_name = request.POST.get('payee_name', '')
+        payee_account = request.POST.get('payee_account', '')
+        contact_number = request.POST.get('contact_number', '')
         
         d = process.extract(file_name)
         print("data :: ", d)
@@ -75,11 +95,15 @@ def upload_cheque(request):
                                   f'{file_name}.png', 
                                   f'{file_name}.json',
                                   d['signature_data']['present'],
-                                  d['signature_data']['count'])
+                                  d['signature_data']['count'],
+                                  payee_name,
+                                  payee_account,
+                                  contact_number,
+                                  file_name)
         if result is False:
             context['error'] = "error occured. Kindly try later."
         else:
-            context['message'] = 'Transaction has been successfully completed. Thank you!'
+            context['message'] = f'Cheque has been submitted for review. Kindly use this number for tracking [{file_name}]'
 
     return render(request, 'user.html', context)
 
