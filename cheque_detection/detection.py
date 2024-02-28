@@ -71,12 +71,14 @@ def collate_fn(batch):
     }
 
 
-def train_model():
+def train_model(vdata):
     # Load data
-    TRAIN_DATALOADER = DataLoader(dataset=TRAIN_DATASET, collate_fn=collate_fn, batch_size=4, shuffle=True)
-    VAL_DATALOADER = DataLoader(dataset=VAL_DATASET, collate_fn=collate_fn, batch_size=4)
-    TEST_DATALOADER = DataLoader(dataset=TEST_DATASET, collate_fn=collate_fn, batch_size=4)
+    TRAIN_DATALOADER = DataLoader(dataset=vdata['TRAIN_DATASET'], collate_fn=collate_fn, batch_size=4, shuffle=True)
+    VAL_DATALOADER = DataLoader(dataset=vdata['VAL_DATASET'], collate_fn=collate_fn, batch_size=4)
+    TEST_DATALOADER = DataLoader(dataset=vdata['TEST_DATASET'], collate_fn=collate_fn, batch_size=4)
 
+    categories = vdata['TRAIN_DATASET'].coco.cats
+    id2label = {k: v['name'] for k,v in categories.items()}
 
     class Detr(pl.LightningModule):
 
@@ -188,8 +190,13 @@ def query_model(model, image):
 
 if __name__ == '__main__':
     
+    # Train
     vdata = validate_data()
+    train_model(vdata)
 
+    # Load and Test
+
+    '''
     model = load_model()
 
     image = cv2.imread('sample_data/test/Cheque-309063_1_jpg.rf.a093639ecf7ac747f502531e24dc4b6f.jpg')
@@ -221,14 +228,4 @@ if __name__ == '__main__':
 
             # Call OCR
             label = id2label[ids[i]]
-
-    '''   fig, axs = plt.subplots(1, len(cropped), figsize=(10*len(cropped), 10))
-    for i in range(len(cropped)):
-        axs[i].plot(cropped[i])
-        axs[0].axis('off')        
-    plt.savefig('output/cropped.jpg')
     '''
-    #final = cv2.vconcat(cropped)
-    #cv2.imsave('output/cropped.jpg', final)
-
-    #plt.imsave('output/result.jpg', cv2.cvtColor(frame_detections, cv2.COLOR_BGR2RGB))
